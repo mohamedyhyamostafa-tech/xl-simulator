@@ -1,0 +1,48 @@
+# ==============================================================================
+# 1. إعداد الشاشة السوداء الموحدة
+# ==============================================================================
+ErrorDocument 404 "<html><body oncontextmenu='return false;' style='background:#000;color:#444;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;margin:0;overflow:hidden;'><h1 style='user-select:none;'>404 Not Found</h1></body></html>"
+ErrorDocument 403 "<html><body oncontextmenu='return false;' style='background:#000;color:#444;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;margin:0;overflow:hidden;'><h1 style='user-select:none;'>404 Not Found</h1></body></html>"
+Options -Indexes
+RewriteEngine On
+
+# ============================
+# 1) منع الوصول المباشر بالامتداد
+# ============================
+RewriteCond %{THE_REQUEST} \s/.*\.(php|html)[\s?] [NC]
+RewriteRule ^ - [R=404,L]
+
+
+
+
+# 🔒 حماية ملف .htaccess نفسه
+<Files ".htaccess">
+    Require all denied
+</Files>
+<Files "sto">
+    Require all denied
+</Files>
+
+# 🔒 حماية ملفات الإعدادات الحساسة
+<FilesMatch "^(config\.php|\.env|db\.php|config1\.php|README.\md|main.\js|style.\css|schema.\sql|functions\.php|db_path\.php|database\.sqlite)$">
+    Require all denied
+</FilesMatch>
+
+
+
+
+# ============================
+# 2) السماح بالملفات الثابتة
+# ============================
+RewriteRule \.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot)$ - [L,NC]
+
+# ============================
+# 3) فتح الملفات بدون امتداد فقط
+# ============================
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
